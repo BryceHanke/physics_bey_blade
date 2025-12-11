@@ -16,7 +16,8 @@ var tips = [
 		"friction": 0.05,
 		"stability": 2.0,
 		"movement_speed": 10.0,
-		"stamina_drain": 0.5
+		"stamina_drain": 0.5,
+		"color": Color(0.8, 0.2, 0.2)
 	},
 	{
 		"name": "Flat Tip",
@@ -25,7 +26,8 @@ var tips = [
 		"friction": 0.3,
 		"stability": 1.0,
 		"movement_speed": 50.0,
-		"stamina_drain": 2.0
+		"stamina_drain": 2.0,
+		"color": Color(0.2, 0.2, 0.8)
 	}
 ]
 
@@ -36,7 +38,8 @@ var metals = [
 		"mass": 0.5,
 		"defense": 1.0,
 		"radius": 0.235,
-		"height": 0.1
+		"height": 0.1,
+		"color": Color(0.7, 0.7, 0.7)
 	},
 	{
 		"name": "Heavy Metal",
@@ -44,7 +47,8 @@ var metals = [
 		"mass": 0.8,
 		"defense": 1.5,
 		"radius": 0.25,
-		"height": 0.15
+		"height": 0.15,
+		"color": Color(0.3, 0.3, 0.3)
 	}
 ]
 
@@ -55,7 +59,8 @@ var rings = [
 		"mass": 0.1,
 		"attack": 1.2,
 		"radius": 0.28,
-		"height": 0.05
+		"height": 0.05,
+		"color": Color(1.0, 0.8, 0.0)
 	},
 	{
 		"name": "Shield Ring",
@@ -63,6 +68,7 @@ var rings = [
 		"mass": 0.15,
 		"attack": 0.8,
 		"radius": 0.30,
-		"height": 0.08
+		"height": 0.08,
+		"color": Color(0.0, 0.8, 0.2)
 	}
 ]

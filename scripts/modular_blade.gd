@@ -16,6 +16,18 @@ func _ready():
 	# Initial setup if needed
 	pass
 
+func apply_color(node, color):
+	if node is MeshInstance3D or node is CSGShape3D:
+		if node.material:
+			node.material = node.material.duplicate()
+			node.material.albedo_color = color
+		else:
+			var mat = StandardMaterial3D.new()
+			mat.albedo_color = color
+			node.material = mat
+	for child in node.get_children():
+		apply_color(child, color)
+
 func setup(config):
 	# Clear existing parts
 	for child in $Visuals/Tip.get_children(): child.queue_free()
@@ -26,16 +38,22 @@ func setup(config):
 	var tip_data = Global.tips[config["tip"]]
 	var tip_instance = tip_data["scene"].instantiate()
 	$Visuals/Tip.add_child(tip_instance)
+	if "color" in tip_data:
+		apply_color(tip_instance, tip_data["color"])
 
 	# Load Metal
 	var metal_data = Global.metals[config["metal"]]
 	var metal_instance = metal_data["scene"].instantiate()
 	$Visuals/Metal.add_child(metal_instance)
+	if "color" in metal_data:
+		apply_color(metal_instance, metal_data["color"])
 
 	# Load Ring
 	var ring_data = Global.rings[config["ring"]]
 	var ring_instance = ring_data["scene"].instantiate()
 	$Visuals/Ring.add_child(ring_instance)
+	if "color" in ring_data:
+		apply_color(ring_instance, ring_data["color"])
 
 	# Update Physics Stats
 	mass = tip_data["mass"] + metal_data["mass"] + ring_data["mass"]
@@ -46,18 +64,20 @@ func setup(config):
 
 	# Update Colliders
 	# Ideally, shapes would be updated based on radius/height from data
-	# Here we do a simple scaling or parameter update if supported
-	var metal_collider = $Colliders/MetalCollider
-	if metal_collider.shape is CylinderShape3D:
-		metal_collider.shape = metal_collider.shape.duplicate()
-		metal_collider.shape.radius = metal_data.get("radius", 0.25)
-		metal_collider.shape.height = metal_data.get("height", 0.1)
+	# We assume Colliders are direct children now to fix collision issues
+	if has_node("MetalCollider"):
+		var metal_collider = $MetalCollider
+		if metal_collider.shape is CylinderShape3D:
+			metal_collider.shape = metal_collider.shape.duplicate()
+			metal_collider.shape.radius = metal_data.get("radius", 0.25)
+			metal_collider.shape.height = metal_data.get("height", 0.1)
 
-	var ring_collider = $Colliders/RingCollider
-	if ring_collider.shape is CylinderShape3D:
-		ring_collider.shape = ring_collider.shape.duplicate()
-		ring_collider.shape.radius = ring_data.get("radius", 0.28)
-		ring_collider.shape.height = ring_data.get("height", 0.05)
+	if has_node("RingCollider"):
+		var ring_collider = $RingCollider
+		if ring_collider.shape is CylinderShape3D:
+			ring_collider.shape = ring_collider.shape.duplicate()
+			ring_collider.shape.radius = ring_data.get("radius", 0.28)
+			ring_collider.shape.height = ring_data.get("height", 0.05)
 
 	# Adjust Center of Mass (Simplified)
 	center_of_mass = Vector3(0, -0.05, 0)
