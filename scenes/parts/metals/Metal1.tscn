@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://metal1_uid"]
+
+[ext_resource type="PackedScene" uid="uid://c64l53r5w3h4" path="res://assets/models/middle_1.blend" id="1_metal1"]
+
+[node name="Metal1" type="Node3D"]
+
+[node name="middle_1" parent="." instance=ExtResource("1_metal1")]
+transform = Transform3D(0.235, 0, 0, 0, 0.235, 0, 0, 0, 0.235, 0, 0, 0)

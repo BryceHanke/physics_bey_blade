@@ -4,47 +4,45 @@ var blades = []
 
 @onready var camera_3d = $cam_holder/Camera3D
 
-const BLADE_0 = preload("uid://cn2rehg0jwnvn")
-const BLADE_1 = preload("uid://b0xqdps3gqw5r")
-const BLADE_2 = preload("uid://dd00u23ilqkhe")
-const BLADE_3 = preload("uid://crpgpr23biek3")
+const MODULAR_BLADE = preload("res://scenes/ModularBlade.tscn")
+const CUSTOMIZATION_SCREEN = preload("res://scenes/CustomizationScreen.tscn")
 
 var throw_force = 50
+var customization_instance
+
+func _ready():
+	customization_instance = CUSTOMIZATION_SCREEN.instantiate()
+	add_child(customization_instance)
+	customization_instance.hide() # Hidden by default, or shown if menu is start
 
 func _process(delta):
+	# Toggle Customization Screen
+	if Input.is_action_just_pressed("ui_cancel"): # Escape key usually
+		if customization_instance.visible:
+			customization_instance.hide()
+			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+		else:
+			customization_instance.show()
+			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+
 	if Input.is_action_just_pressed("mouse"):
 		for i in blades:
 			i.queue_free()
 		blades.clear()
-	if Input.is_action_just_pressed("ui_left"):
-		var new_blade
-		new_blade = BLADE_0.instantiate()
-		get_tree().current_scene.add_child(new_blade)
-		blades.append(new_blade)
-		new_blade.global_position = camera_3d.global_position - camera_3d.global_basis.z
-		new_blade.apply_impulse(-camera_3d.global_basis.z)
-		new_blade.apply_torque_impulse(Vector3(0,throw_force,0))
-	if Input.is_action_just_pressed("ui_up"):
-		var new_blade
-		new_blade = BLADE_1.instantiate()
-		get_tree().current_scene.add_child(new_blade)
-		blades.append(new_blade)
-		new_blade.global_position = camera_3d.global_position - camera_3d.global_basis.z
-		new_blade.apply_impulse(-camera_3d.global_basis.z)
-		new_blade.apply_torque_impulse(Vector3(0,throw_force,0))
-	if Input.is_action_just_pressed("ui_right"):
-		var new_blade
-		new_blade = BLADE_2.instantiate()
-		get_tree().current_scene.add_child(new_blade)
-		blades.append(new_blade)
-		new_blade.global_position = camera_3d.global_position - camera_3d.global_basis.z
-		new_blade.apply_impulse(-camera_3d.global_basis.z)
-		new_blade.apply_torque_impulse(Vector3(0,throw_force,0))
-	if Input.is_action_just_pressed("ui_down"):
-		var new_blade
-		new_blade = BLADE_3.instantiate()
-		get_tree().current_scene.add_child(new_blade)
-		blades.append(new_blade)
-		new_blade.global_position = camera_3d.global_position - camera_3d.global_basis.z
-		new_blade.apply_impulse(-camera_3d.global_basis.z)
-		new_blade.apply_torque_impulse(Vector3(0,throw_force,0))
+
+	# Spawn Custom Blade
+	if Input.is_action_just_pressed("ui_accept") or Input.is_action_just_pressed("ui_left"):
+		# Only spawn if menu is not visible
+		if not customization_instance.visible:
+			spawn_blade()
+
+func spawn_blade():
+	var new_blade = MODULAR_BLADE.instantiate()
+	get_tree().current_scene.add_child(new_blade)
+	blades.append(new_blade)
+
+	new_blade.setup(Global.current_config)
+
+	new_blade.global_position = camera_3d.global_position - camera_3d.global_basis.z
+	new_blade.apply_impulse(-camera_3d.global_basis.z * 10) # Throw forward
+	new_blade.apply_torque_impulse(Vector3(0, throw_force, 0)) # Spin
