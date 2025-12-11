@@ -32,7 +32,8 @@ func setup(config):
 	# Clear existing parts
 	for child in $Visuals/Tip.get_children(): child.queue_free()
 	for child in $Visuals/Metal.get_children(): child.queue_free()
-	for child in $Visuals/Ring.get_children(): child.queue_free()
+	for child in $Visuals/UpperRing.get_children(): child.queue_free()
+	for child in $Visuals/LowerRing.get_children(): child.queue_free()
 
 	# Load Tip
 	var tip_data = Global.tips[config["tip"]]
@@ -48,23 +49,36 @@ func setup(config):
 	if "color" in metal_data:
 		apply_color(metal_instance, metal_data["color"])
 
-	# Load Ring
-	var ring_data = Global.rings[config["ring"]]
-	var ring_instance = ring_data["scene"].instantiate()
-	$Visuals/Ring.add_child(ring_instance)
-	if "color" in ring_data:
-		apply_color(ring_instance, ring_data["color"])
+	# Load Upper Ring
+	var upper_ring_data = Global.upper_rings[config["upper_ring"]]
+	var upper_ring_instance = upper_ring_data["scene"].instantiate()
+	$Visuals/UpperRing.add_child(upper_ring_instance)
+	if "color" in upper_ring_data:
+		apply_color(upper_ring_instance, upper_ring_data["color"])
+
+	# Load Lower Ring
+	var lower_ring_data = Global.lower_rings[config["lower_ring"]]
+	var lower_ring_instance = lower_ring_data["scene"].instantiate()
+	$Visuals/LowerRing.add_child(lower_ring_instance)
+	if "color" in lower_ring_data:
+		apply_color(lower_ring_instance, lower_ring_data["color"])
 
 	# Update Physics Stats
-	mass = tip_data["mass"] + metal_data["mass"] + ring_data["mass"]
+	mass = tip_data["mass"] + metal_data["mass"] + upper_ring_data["mass"] + lower_ring_data["mass"]
 	spin_friction = tip_data["friction"]
 	stability_factor = tip_data["stability"]
 	movement_speed = tip_data["movement_speed"]
 	stamina_drain_rate = tip_data["stamina_drain"]
 
+	# Ensure low bounce physics material
+	if physics_material_override:
+		physics_material_override.bounce = 0.0
+	else:
+		var pm = PhysicsMaterial.new()
+		pm.bounce = 0.0
+		physics_material_override = pm
+
 	# Update Colliders
-	# Ideally, shapes would be updated based on radius/height from data
-	# We assume Colliders are direct children now to fix collision issues
 	if has_node("MetalCollider"):
 		var metal_collider = $MetalCollider
 		if metal_collider.shape is CylinderShape3D:
@@ -72,14 +86,23 @@ func setup(config):
 			metal_collider.shape.radius = metal_data.get("radius", 0.25)
 			metal_collider.shape.height = metal_data.get("height", 0.1)
 
-	if has_node("RingCollider"):
-		var ring_collider = $RingCollider
-		if ring_collider.shape is CylinderShape3D:
-			ring_collider.shape = ring_collider.shape.duplicate()
-			ring_collider.shape.radius = ring_data.get("radius", 0.28)
-			ring_collider.shape.height = ring_data.get("height", 0.05)
+	if has_node("UpperRingCollider"):
+		var upper_ring_collider = $UpperRingCollider
+		if upper_ring_collider.shape is CylinderShape3D:
+			upper_ring_collider.shape = upper_ring_collider.shape.duplicate()
+			upper_ring_collider.shape.radius = upper_ring_data.get("radius", 0.28)
+			upper_ring_collider.shape.height = upper_ring_data.get("height", 0.05)
 
-	# Adjust Center of Mass (Simplified)
+	if has_node("LowerRingCollider"):
+		var lower_ring_collider = $LowerRingCollider
+		if lower_ring_collider.shape is CylinderShape3D:
+			lower_ring_collider.shape = lower_ring_collider.shape.duplicate()
+			lower_ring_collider.shape.radius = lower_ring_data.get("radius", 0.28)
+			lower_ring_collider.shape.height = lower_ring_data.get("height", 0.05)
+
+	# Adjust Center of Mass
+	# Fixes "Condition center_of_mass_mode != CENTER_OF_MASS_MODE_CUSTOM is true"
+	center_of_mass_mode = CENTER_OF_MASS_MODE_CUSTOM
 	center_of_mass = Vector3(0, -0.05, 0)
 
 	# Inertia (Simplified approximation based on cylinder)
@@ -98,7 +121,10 @@ func _physics_process(delta):
 	else:
 		if $AudioStreamPlayer3D.playing:
 			$AudioStreamPlayer3D.stop()
-	$AudioStreamPlayer3D.pitch_scale = angular_velocity.length() / 20.0
+
+	# Fixes "Condition p_pitch_scale <= 0.0 is true"
+	var new_pitch = angular_velocity.length() / 20.0
+	$AudioStreamPlayer3D.pitch_scale = max(0.01, new_pitch)
 
 	# 1. Stamina Loss / Spin Friction
 	# Apply torque against the spin
@@ -130,7 +156,7 @@ func _physics_process(delta):
 	# When tilted, the point of contact is not center.
 	if ray.is_colliding():
 		var normal = ray.get_collision_normal()
-		var point = ray.get_collision_point()
+		var point = ray.get_collision_point() # parameter shadowing fix
 
 		# Simple "Walk": move in direction of tilt cross up
 		# If tilted, move perpendicular to tilt.
