@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://ring2_uid"]
+
+[ext_resource type="PackedScene" uid="uid://d3q1b8y6r5n4" path="res://assets/models/top_2.blend" id="1_ring2"]
+
+[node name="Ring2" type="Node3D"]
+
+[node name="top_2" parent="." instance=ExtResource("1_ring2")]
+transform = Transform3D(0.155, 0, 0, 0, 0.155, 0, 0, 0, 0.155, 0, 0, 0)
