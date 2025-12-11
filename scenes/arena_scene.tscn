@@ -118,7 +118,7 @@ directional_shadow_blend_splits = true
 environment = SubResource("Environment_r7y04")
 
 [node name="arena_3" parent="." instance=ExtResource("7_rhqdc")]
-transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 4.107409, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.033830263, 0)
 
 [node name="arena_2" parent="." instance=ExtResource("8_agamo")]
-transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 3.47, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0842453, 0)

@@ -18,13 +18,13 @@ func _ready():
 
 func apply_color(node, color):
 	if node is MeshInstance3D or node is CSGShape3D:
-		if node.material:
-			node.material = node.material.duplicate()
+		if node.material_override:
+			node.material_override = node.material.duplicate()
 			node.material.albedo_color = color
 		else:
 			var mat = StandardMaterial3D.new()
 			mat.albedo_color = color
-			node.material = mat
+			node.material_override = mat
 	for child in node.get_children():
 		apply_color(child, color)
 
