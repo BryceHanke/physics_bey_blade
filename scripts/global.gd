@@ -1,5 +1,7 @@
 extends Node
 
+var is_customizing = false
+
 var current_config = {
 	"tip": 0,
 	"metal": 0,

@@ -42,4 +42,5 @@ func _on_part_changed(_index):
 
 func _on_spawn_pressed():
 	hide()
+	Global.is_customizing = false
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
