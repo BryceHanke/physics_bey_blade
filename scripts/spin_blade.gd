@@ -20,9 +20,11 @@ func _process(delta):
 	if Input.is_action_just_pressed("ui_cancel"): # Escape key usually
 		if customization_instance.visible:
 			customization_instance.hide()
+			Global.is_customizing = false
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 		else:
 			customization_instance.show()
+			Global.is_customizing = true
 			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
 	if Input.is_action_just_pressed("mouse"):

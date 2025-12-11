@@ -4,6 +4,7 @@ var cam_speed
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
+	if Global.is_customizing: return
 	if !Input.is_action_pressed("mouse"):
 		if Input.is_action_pressed("fast"):
 			cam_speed = 5
