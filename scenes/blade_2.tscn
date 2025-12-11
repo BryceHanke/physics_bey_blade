@@ -1,0 +1,131 @@
+[gd_scene load_steps=12 format=3 uid="uid://dd00u23ilqkhe"]
+
+[ext_resource type="Script" uid="uid://tti6s8h0o3j4" path="res://scripts/blade.gd" id="1_k1mc2"]
+[ext_resource type="PackedScene" uid="uid://b1f6owkifxwuy" path="res://assets/models/top_2.blend" id="2_mpcoh"]
+[ext_resource type="Material" uid="uid://dj5ovdy2nvlhe" path="res://assets/materials/mushroom.tres" id="3_dsthp"]
+[ext_resource type="PackedScene" uid="uid://ngmduxiq8qrm" path="res://assets/models/middle_1.blend" id="4_fckbm"]
+[ext_resource type="AudioStream" uid="uid://bgc8wr83wdtwh" path="res://assets/sounds/wind.mp3" id="5_mpcoh"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_df7il"]
+friction = 0.1
+bounce = 0.3
+absorbent = true
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_74ksv"]
+radius = 0.12479023
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_df7il"]
+height = 0.036376953
+radius = 0.08300781
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_co5ir"]
+height = 0.02734375
+radius = 0.14648438
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_co5ir"]
+radius = 0.048339844
+height = 0.09667969
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pij0b"]
+albedo_color = Color(0.99110776, 0.9430531, 0.8459127, 1)
+metallic_specular = 0.21
+
+[node name="blade" type="RigidBody3D" node_paths=PackedStringArray("ray")]
+mass = 0.2
+physics_material_override = SubResource("PhysicsMaterial_df7il")
+inertia = Vector3(0.1, 0.1, 0.1)
+continuous_cd = true
+angular_damp = 0.01
+script = ExtResource("1_k1mc2")
+ray = NodePath("RayCast3D")
+pitch = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 0, -0.09561105, 0)
+shape = SubResource("SphereShape3D_74ksv")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.04737732, 0)
+shape = SubResource("CylinderShape3D_df7il")
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="."]
+transform = Transform3D(1.25, 0, 0, 0, 1.25, 0, 0, 0, 1.25, 0, 0.0059555396, 0)
+shape = SubResource("CylinderShape3D_co5ir")
+
+[node name="Area3D" type="Area3D" parent="." groups=["blade"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0010002553, 0)
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="Area3D"]
+transform = Transform3D(3.4, 0, 0, 0, 1.095, 0, 0, 0, 3.619, 0, 0.0059555396, 0)
+shape = SubResource("CapsuleShape3D_co5ir")
+
+[node name="top_2" parent="." instance=ExtResource("2_mpcoh")]
+transform = Transform3D(0.185, 0, 0, 0, 0.185, 0, 0, 0, 0.185, 0, 0.0059555396, 0)
+
+[node name="Cube" parent="top_2" index="0"]
+material_override = ExtResource("3_dsthp")
+
+[node name="CSGSphere3D" type="CSGSphere3D" parent="top_2"]
+transform = Transform3D(6.451613, 0, 0, 0, 6.451613, 0, 0, 0, 6.451613, 0.066983126, 0.22368915, 0.26102823)
+radius = 0.025
+radial_segments = 4
+rings = 3
+
+[node name="CSGSphere3D2" type="CSGSphere3D" parent="top_2"]
+transform = Transform3D(6.451613, 0, 0, 0, 6.451613, 0, 0, 0, 6.451613, -0.38943878, 0.14045772, -0.44587448)
+radius = 0.025
+radial_segments = 4
+rings = 3
+
+[node name="CSGSphere3D3" type="CSGSphere3D" parent="top_2"]
+transform = Transform3D(6.451613, 0, 0, 0, 6.451613, 0, 0, 0, 6.451613, -0.32394207, 0.08164274, 0.56875986)
+radius = 0.025
+radial_segments = 4
+rings = 3
+
+[node name="CSGSphere3D4" type="CSGSphere3D" parent="top_2"]
+transform = Transform3D(1.0803677, 0, 6.360512, 0, 6.451613, 0, -6.360512, 0, 1.0803677, 0.50962627, 0.13360088, 0.100785434)
+radius = 0.025
+radial_segments = 4
+rings = 3
+
+[node name="CSGSphere3D5" type="CSGSphere3D" parent="top_2"]
+transform = Transform3D(1.0803677, 0, 6.360512, 0, 6.451613, 0, -6.360512, 0, 1.0803677, -0.5915663, 0.14045772, 0.07447939)
+radius = 0.025
+radial_segments = 4
+rings = 3
+
+[node name="CSGSphere3D6" type="CSGSphere3D" parent="top_2"]
+transform = Transform3D(1.0803677, 0, 6.360512, 0, 6.451613, 0, -6.360512, 0, 1.0803677, 0.38929847, 0.049877696, -0.6304985)
+radius = 0.025
+radial_segments = 4
+rings = 3
+
+[node name="middle_1" parent="." instance=ExtResource("4_fckbm")]
+transform = Transform3D(0.155, 0, 0, 0, 0.155, 0, 0, 0, 0.155, 0, -0.045701012, 0)
+
+[node name="Cylinder" parent="middle_1" index="0"]
+surface_material_override/0 = SubResource("StandardMaterial3D_pij0b")
+
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="."]
+transform = Transform3D(0.08, 0, 0, 0, -0.08, -1.20796635e-08, 0, 1.20796635e-08, -0.08, 0, -0.09019906, -3.3129535e-09)
+radius = 0.11621094
+height = 1.0245175
+cone = true
+
+[node name="RayCast3D" type="RayCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.06700951, 0)
+target_position = Vector3(0, -0.1, 0)
+hit_from_inside = true
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("5_mpcoh")
+volume_db = -33.645
+max_db = -2.505
+pitch_scale = 1.63
+playback_type = 1
+doppler_tracking = 2
+parameters/looping = true
+
+[editable path="top_2"]
+[editable path="middle_1"]
