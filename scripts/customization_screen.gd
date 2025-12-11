@@ -1,6 +1,7 @@
 extends Control
 
-@onready var ring_selector = $Panel/VBoxContainer/RingSelector
+@onready var upper_ring_selector = $Panel/VBoxContainer/UpperRingSelector
+@onready var lower_ring_selector = $Panel/VBoxContainer/LowerRingSelector
 @onready var metal_selector = $Panel/VBoxContainer/MetalSelector
 @onready var tip_selector = $Panel/VBoxContainer/TipSelector
 @onready var preview_blade = $PreviewContainer/SubViewport/PreviewWorld/BladePivot/ModularBlade
@@ -8,8 +9,11 @@ extends Control
 
 func _ready():
 	# Populate UI
-	for i in range(Global.rings.size()):
-		ring_selector.add_item(Global.rings[i]["name"], i)
+	for i in range(Global.upper_rings.size()):
+		upper_ring_selector.add_item(Global.upper_rings[i]["name"], i)
+
+	for i in range(Global.lower_rings.size()):
+		lower_ring_selector.add_item(Global.lower_rings[i]["name"], i)
 
 	for i in range(Global.metals.size()):
 		metal_selector.add_item(Global.metals[i]["name"], i)
@@ -18,7 +22,8 @@ func _ready():
 		tip_selector.add_item(Global.tips[i]["name"], i)
 
 	# Connect Signals
-	ring_selector.item_selected.connect(_on_part_changed)
+	upper_ring_selector.item_selected.connect(_on_part_changed)
+	lower_ring_selector.item_selected.connect(_on_part_changed)
 	metal_selector.item_selected.connect(_on_part_changed)
 	tip_selector.item_selected.connect(_on_part_changed)
 	$Panel/VBoxContainer/SpawnButton.pressed.connect(_on_spawn_pressed)
@@ -31,7 +36,8 @@ func _process(delta):
 
 func _on_part_changed(_index):
 	var config = {
-		"ring": ring_selector.selected,
+		"upper_ring": upper_ring_selector.selected,
+		"lower_ring": lower_ring_selector.selected,
 		"metal": metal_selector.selected,
 		"tip": tip_selector.selected
 	}

@@ -5,7 +5,7 @@
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_mod"]
 friction = 0.5
-bounce = 0.5
+bounce = 0.0
 absorbent = true
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_tip"]
@@ -35,7 +35,9 @@ ray = NodePath("RayCast3D")
 
 [node name="Metal" type="Node3D" parent="Visuals"]
 
-[node name="Ring" type="Node3D" parent="Visuals"]
+[node name="UpperRing" type="Node3D" parent="Visuals"]
+
+[node name="LowerRing" type="Node3D" parent="Visuals"]
 
 [node name="TipCollider" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
@@ -44,8 +46,12 @@ shape = SubResource("SphereShape3D_tip")
 [node name="MetalCollider" type="CollisionShape3D" parent="."]
 shape = SubResource("CylinderShape3D_body")
 
-[node name="RingCollider" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
+[node name="UpperRingCollider" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+shape = SubResource("CylinderShape3D_ring")
+
+[node name="LowerRingCollider" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
 shape = SubResource("CylinderShape3D_ring")
 
 [node name="RayCast3D" type="RayCast3D" parent="."]
