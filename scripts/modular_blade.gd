@@ -35,47 +35,56 @@ func setup(config):
 	for child in $Visuals/UpperRing.get_children(): child.queue_free()
 	for child in $Visuals/LowerRing.get_children(): child.queue_free()
 
+	# Get Config Properties
+	var scale_factor = config.get("scale", 1.0)
+	var material_idx = config.get("material", 0)
+	var material_data = Global.materials[material_idx] if material_idx < Global.materials.size() else Global.materials[0]
+
 	# Load Tip
 	var tip_data = Global.tips[config["tip"]]
 	var tip_instance = tip_data["scene"].instantiate()
 	$Visuals/Tip.add_child(tip_instance)
 	if "color" in tip_data:
-		apply_color(tip_instance, tip_data["color"])
+		apply_color(tip_instance, tip_data["color"] * material_data["color_tint"])
 
 	# Load Metal
 	var metal_data = Global.metals[config["metal"]]
 	var metal_instance = metal_data["scene"].instantiate()
 	$Visuals/Metal.add_child(metal_instance)
 	if "color" in metal_data:
-		apply_color(metal_instance, metal_data["color"])
+		apply_color(metal_instance, metal_data["color"] * material_data["color_tint"])
 
 	# Load Upper Ring
 	var upper_ring_data = Global.upper_rings[config["upper_ring"]]
 	var upper_ring_instance = upper_ring_data["scene"].instantiate()
 	$Visuals/UpperRing.add_child(upper_ring_instance)
 	if "color" in upper_ring_data:
-		apply_color(upper_ring_instance, upper_ring_data["color"])
+		apply_color(upper_ring_instance, upper_ring_data["color"] * material_data["color_tint"])
 
 	# Load Lower Ring
 	var lower_ring_data = Global.lower_rings[config["lower_ring"]]
 	var lower_ring_instance = lower_ring_data["scene"].instantiate()
 	$Visuals/LowerRing.add_child(lower_ring_instance)
 	if "color" in lower_ring_data:
-		apply_color(lower_ring_instance, lower_ring_data["color"])
+		apply_color(lower_ring_instance, lower_ring_data["color"] * material_data["color_tint"])
+
+	# Apply Scale to Visuals
+	$Visuals.scale = Vector3(scale_factor, scale_factor, scale_factor)
 
 	# Update Physics Stats
-	mass = tip_data["mass"] + metal_data["mass"] + upper_ring_data["mass"] + lower_ring_data["mass"]
-	spin_friction = tip_data["friction"]
-	stability_factor = tip_data["stability"]
+	var base_mass = tip_data["mass"] + metal_data["mass"] + upper_ring_data["mass"] + lower_ring_data["mass"]
+	mass = base_mass * material_data["mass_multiplier"] * (scale_factor * scale_factor * scale_factor) # Mass scales with volume
+	spin_friction = tip_data["friction"] * material_data["friction_multiplier"]
+	stability_factor = tip_data["stability"] * (scale_factor) # Larger = more stable usually? Or less? Let's say more stable but slower.
 	movement_speed = tip_data["movement_speed"]
 	stamina_drain_rate = tip_data["stamina_drain"]
 
-	# Ensure low bounce physics material
+	# Ensure physics material
 	if physics_material_override:
-		physics_material_override.bounce = 0.0
+		physics_material_override.bounce = material_data.get("bounce_multiplier", 0.0)
 	else:
 		var pm = PhysicsMaterial.new()
-		pm.bounce = 0.0
+		pm.bounce = material_data.get("bounce_multiplier", 0.0)
 		physics_material_override = pm
 
 	# Update Colliders
@@ -83,32 +92,32 @@ func setup(config):
 		var metal_collider = $MetalCollider
 		if metal_collider.shape is CylinderShape3D:
 			metal_collider.shape = metal_collider.shape.duplicate()
-			metal_collider.shape.radius = metal_data.get("radius", 0.25)
-			metal_collider.shape.height = metal_data.get("height", 0.1)
+			metal_collider.shape.radius = metal_data.get("radius", 0.25) * scale_factor
+			metal_collider.shape.height = metal_data.get("height", 0.1) * scale_factor
 
 	if has_node("UpperRingCollider"):
 		var upper_ring_collider = $UpperRingCollider
 		if upper_ring_collider.shape is CylinderShape3D:
 			upper_ring_collider.shape = upper_ring_collider.shape.duplicate()
-			upper_ring_collider.shape.radius = upper_ring_data.get("radius", 0.28)
-			upper_ring_collider.shape.height = upper_ring_data.get("height", 0.05)
+			upper_ring_collider.shape.radius = upper_ring_data.get("radius", 0.28) * scale_factor
+			upper_ring_collider.shape.height = upper_ring_data.get("height", 0.05) * scale_factor
 
 	if has_node("LowerRingCollider"):
 		var lower_ring_collider = $LowerRingCollider
 		if lower_ring_collider.shape is CylinderShape3D:
 			lower_ring_collider.shape = lower_ring_collider.shape.duplicate()
-			lower_ring_collider.shape.radius = lower_ring_data.get("radius", 0.28)
-			lower_ring_collider.shape.height = lower_ring_data.get("height", 0.05)
+			lower_ring_collider.shape.radius = lower_ring_data.get("radius", 0.28) * scale_factor
+			lower_ring_collider.shape.height = lower_ring_data.get("height", 0.05) * scale_factor
 
 	# Adjust Center of Mass
 	# Fixes "Condition center_of_mass_mode != CENTER_OF_MASS_MODE_CUSTOM is true"
 	center_of_mass_mode = CENTER_OF_MASS_MODE_CUSTOM
-	center_of_mass = Vector3(0, -0.05, 0)
+	center_of_mass = Vector3(0, -0.05 * scale_factor, 0)
 
 	# Inertia (Simplified approximation based on cylinder)
-	var r = metal_data.get("radius", 0.25) # approx radius based on metal
+	var r = metal_data.get("radius", 0.25) * scale_factor # approx radius based on metal
 	var I_y = 0.5 * mass * r * r
-	var I_xz = (1.0/12.0) * mass * (3*r*r + 0.1*0.1) # height approx 0.1
+	var I_xz = (1.0/12.0) * mass * (3*r*r + (0.1*scale_factor)*(0.1*scale_factor)) # height approx 0.1
 	inertia = Vector3(I_xz, I_y, I_xz)
 
 func _physics_process(delta):
@@ -167,6 +176,9 @@ func _physics_process(delta):
 
 			# Force depends on how much we are tilted and spin speed
 			var walk_force = walk_dir * speed * movement_speed * tilt.length()
+			# Clamp force to prevent launching
+			if walk_force.length() > 30.0:
+				walk_force = walk_force.normalized() * 30.0
 			apply_central_force(walk_force)
 
 	# 4. Gravity / Precession Torque

@@ -80,11 +80,11 @@ mouse={
 
 [physics]
 
-2d/run_on_separate_thread=true
-3d/run_on_separate_thread=true
-common/physics_ticks_per_second=144
-common/max_physics_steps_per_frame=75
-common/physics_jitter_fix=0.393
+2d/run_on_separate_thread=false
+3d/run_on_separate_thread=false
+common/physics_ticks_per_second=60
+common/max_physics_steps_per_frame=8
+common/physics_jitter_fix=0.0
 3d/physics_engine="GodotPhysics3D"
 jolt_physics_3d/simulation/velocity_steps=32
 jolt_physics_3d/simulation/position_steps=32
