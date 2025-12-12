@@ -6,8 +6,41 @@ var current_config = {
 	"tip": 0,
 	"metal": 0,
 	"upper_ring": 0,
-	"lower_ring": 0
+	"lower_ring": 0,
+	"material": 0,
+	"scale": 1.0
 }
+
+var materials = [
+	{
+		"name": "Steel",
+		"mass_multiplier": 1.0,
+		"friction_multiplier": 1.0,
+		"bounce_multiplier": 0.5,
+		"color_tint": Color(1.0, 1.0, 1.0)
+	},
+	{
+		"name": "Wood",
+		"mass_multiplier": 0.4,
+		"friction_multiplier": 1.5,
+		"bounce_multiplier": 0.2,
+		"color_tint": Color(0.6, 0.4, 0.2)
+	},
+	{
+		"name": "Plastic",
+		"mass_multiplier": 0.3,
+		"friction_multiplier": 0.8,
+		"bounce_multiplier": 0.8,
+		"color_tint": Color(0.2, 0.6, 1.0)
+	},
+	{
+		"name": "Gold",
+		"mass_multiplier": 2.5,
+		"friction_multiplier": 1.2,
+		"bounce_multiplier": 0.1,
+		"color_tint": Color(1.0, 0.8, 0.2)
+	}
+]
 
 var tips = [
 	{
